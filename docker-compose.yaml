@@ -1,0 +1,41 @@
+version: '3.7'
+volumes: { }
+services:
+
+  dse-0:
+    image: cloudnativek8s/dse-server:6.8.9-ubi7-v1.0.0
+    environment:
+      - DS_LICENSE=accept
+      - SSL_VALIDATE=false
+    volumes:
+      - ./dc1.properties:/opt/dse/resources/cassandra/conf-template/cassandra-rackdc.properties
+      - ./dc1.properties:/opt/dse/resources/cassandra/conf/cassandra-rackdc.properties
+    ports:
+      - "19042:9042"
+    container_name: dse-0
+    networks:
+      ds:
+        aliases:
+          - dse-0
+
+  dse-1:
+    image: cloudnativek8s/dse-server:6.8.9-ubi7-v1.0.0
+    environment:
+      - DS_LICENSE=accept
+      - SSL_VALIDATE=false
+      - SEEDS=dse-0
+    volumes:
+      - ./dc2.properties:/opt/dse/resources/cassandra/conf-template/cassandra-rackdc.properties
+      - ./dc2.properties:/opt/dse/resources/cassandra/conf/cassandra-rackdc.properties
+    ports:
+      - "29042:9042"
+    container_name: dse-1
+    networks:
+      ds:
+        aliases:
+          - dse-1
+networks:
+  ds: { }
+
+
+
